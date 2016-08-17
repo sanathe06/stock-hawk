@@ -35,7 +35,7 @@ public class Utils {
 
     public static boolean showPercent = true;
 
-    public static ArrayList quoteJsonToContentVals(String JSON) {
+    public static ArrayList<ContentProviderOperation> quoteJsonToContentVals(String JSON) {
         ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
         JSONObject jsonObject = null;
         JSONArray resultsArray = null;
@@ -49,14 +49,20 @@ public class Utils {
                 if (count == 1) {
                     jsonObject = jsonObject.getJSONObject("results")
                             .getJSONObject("quote");
-                    batchOperations.add(buildBatchOperation(jsonObject, createdTime));
+                    ContentProviderOperation batchOperation = buildBatchOperation(jsonObject, createdTime);
+                    if (batchOperation != null) {
+                        batchOperations.add(batchOperation);
+                    }
                 } else {
                     resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
 
                     if (resultsArray != null && resultsArray.length() != 0) {
                         for (int i = 0; i < resultsArray.length(); i++) {
                             jsonObject = resultsArray.getJSONObject(i);
-                            batchOperations.add(buildBatchOperation(jsonObject, createdTime));
+                            ContentProviderOperation batchOperation = buildBatchOperation(jsonObject, createdTime);
+                            if (batchOperation != null) {
+                                batchOperations.add(batchOperation);
+                            }
                         }
                     }
                 }
@@ -67,7 +73,7 @@ public class Utils {
         return batchOperations;
     }
 
-    public static String truncateBidPrice(String bidPrice) {
+    public static String truncateBidPrice(String bidPrice) throws NumberFormatException {
         bidPrice = String.format("%.2f", Float.parseFloat(bidPrice));
         return bidPrice;
     }
@@ -94,10 +100,16 @@ public class Utils {
                 QuoteProvider.Quotes.CONTENT_URI);
         try {
             String change = jsonObject.getString("Change");
-            builder.withValue(QuoteColumns.SYMBOL, jsonObject.getString("symbol"));
-            builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(jsonObject.getString("Bid")));
+            String symbol = jsonObject.getString("symbol");
+            String bid = jsonObject.getString("Bid");
+            String changeinPercent = jsonObject.getString("ChangeinPercent");
+
+            if (change.equals("null") || symbol.equals("null") || bid.equals("null") || changeinPercent.equals("null"))
+                return null;
+            builder.withValue(QuoteColumns.SYMBOL, symbol);
+            builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(bid));
             builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
-                    jsonObject.getString("ChangeinPercent"), true));
+                    changeinPercent, true));
             builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
             builder.withValue(QuoteColumns.ISCURRENT, 1);
             if (change.charAt(0) == '-') {
@@ -108,8 +120,8 @@ public class Utils {
 
             builder.withValue(QuoteColumns.CREATED, createdTime);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (JSONException | NumberFormatException e) {
+            Log.e(LOG_TAG, e.getMessage(), e);
         }
         return builder.build();
     }
