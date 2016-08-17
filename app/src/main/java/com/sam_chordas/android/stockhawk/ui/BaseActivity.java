@@ -6,14 +6,28 @@ import android.support.v7.app.AppCompatActivity;
 import com.sam_chordas.android.stockhawk.StockApplication;
 import com.sam_chordas.android.stockhawk.common.ConnectivityReceiver;
 
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 /**
  * Created by sanathnandasiri on 8/13/16.
  */
-public class BaseActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
+public abstract class BaseActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener {
+
+    private Unbinder mUnBinder;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(getLayoutId());
+        mUnBinder = ButterKnife.bind(this);
+    }
+
+    public abstract int getLayoutId();
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -27,6 +41,12 @@ public class BaseActivity extends AppCompatActivity implements ConnectivityRecei
     protected void onPause() {
         super.onPause();
         StockApplication.getInstance().setConnectivityListener(null);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mUnBinder.unbind();
     }
 
     @Override

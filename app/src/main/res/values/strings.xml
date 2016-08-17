@@ -12,4 +12,5 @@
   <string name="network_toast">Uh-oh! This app requires an internet connection</string>
   <string name="msg_no_network">Internet needs for latest stock details</string>
   <string name="snack_action">CONNECT</string>
+  <string name="action_backup_db">Backup DB</string>
 </resources>

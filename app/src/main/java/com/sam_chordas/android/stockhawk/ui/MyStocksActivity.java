@@ -8,7 +8,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -27,6 +26,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
+import com.sam_chordas.android.stockhawk.BuildConfig;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.common.ConnectivityReceiver;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
@@ -62,7 +62,6 @@ public class MyStocksActivity extends BaseActivity implements LoaderManager.Load
         super.onCreate(savedInstanceState);
         mContext = this;
         isConnected = ConnectivityReceiver.isConnected();
-        setContentView(R.layout.activity_my_stocks);
         // The intent service is for executing immediate pulls from the Yahoo API
         // GCMTaskService can only schedule tasks, they cannot execute immediately
         mServiceIntent = new Intent(this, StockIntentService.class);
@@ -84,8 +83,11 @@ public class MyStocksActivity extends BaseActivity implements LoaderManager.Load
                 new RecyclerViewItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View v, int position) {
-                        //TODO:
-                        // do something on item click
+                        mCursor.moveToPosition(position);
+                        Intent intentStockDetails = new Intent(MyStocksActivity.this, StockDetailsActivity.class);
+                        intentStockDetails.putExtra(StockDetailsActivity.INTENT_ARGS_STOCK_SYMBOL,
+                                mCursor.getString(mCursor.getColumnIndex("symbol")));
+                        startActivity(intentStockDetails);
                     }
                 }));
         recyclerView.setAdapter(mCursorAdapter);
@@ -124,6 +126,11 @@ public class MyStocksActivity extends BaseActivity implements LoaderManager.Load
             // are updated.
             GcmNetworkManager.getInstance(this).schedule(periodicTask);
         }
+    }
+
+    @Override
+    public int getLayoutId() {
+        return R.layout.activity_my_stocks;
     }
 
     private void addNewStock() {
@@ -205,6 +212,9 @@ public class MyStocksActivity extends BaseActivity implements LoaderManager.Load
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.my_stocks, menu);
+        if(!BuildConfig.DEBUG){
+            menu.removeItem(R.id.action_backup_db);
+        }
         restoreActionBar();
         return true;
     }
@@ -225,6 +235,10 @@ public class MyStocksActivity extends BaseActivity implements LoaderManager.Load
             // this is for changing stock changes from percent value to dollar value
             Utils.showPercent = !Utils.showPercent;
             this.getContentResolver().notifyChange(QuoteProvider.Quotes.CONTENT_URI, null);
+        }
+
+        if(id == R.id.action_backup_db){
+            Utils.backupDatabase(this);
         }
 
         return super.onOptionsItemSelected(item);
