@@ -212,9 +212,6 @@ public class MyStocksActivity extends BaseActivity implements LoaderManager.Load
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.my_stocks, menu);
-        if(!BuildConfig.DEBUG){
-            menu.removeItem(R.id.action_backup_db);
-        }
         restoreActionBar();
         return true;
     }
@@ -235,10 +232,6 @@ public class MyStocksActivity extends BaseActivity implements LoaderManager.Load
             // this is for changing stock changes from percent value to dollar value
             Utils.showPercent = !Utils.showPercent;
             this.getContentResolver().notifyChange(QuoteProvider.Quotes.CONTENT_URI, null);
-        }
-
-        if(id == R.id.action_backup_db){
-            Utils.backupDatabase(this);
         }
 
         return super.onOptionsItemSelected(item);

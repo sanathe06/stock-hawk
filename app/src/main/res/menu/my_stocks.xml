@@ -11,9 +11,4 @@
       android:title="@string/action_settings"
       android:orderInCategory="100"
       app:showAsAction="never" />
-
-  <item android:id="@+id/action_backup_db"
-      android:title="@string/action_backup_db"
-      android:orderInCategory="100"
-      app:showAsAction="never" />
 </menu>

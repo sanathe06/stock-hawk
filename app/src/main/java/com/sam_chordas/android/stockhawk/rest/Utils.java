@@ -126,36 +126,6 @@ public class Utils {
         return builder.build();
     }
 
-    public static void backupDatabase(Context context) {
-        try {
-            File sd = Environment.getExternalStorageDirectory();
-            File data = Environment.getDataDirectory();
-            Date datum = new Date();
-            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-
-            if (sd.canWrite()) {
-                String dbName = "quoteDatabase.db";
-                String currentDBPath = "//data//" + context.getApplicationInfo().packageName + "//databases//" + dbName;
-                String backupDBPath = "backup-" + df.format(datum) + "-" + dbName;
-                File currentDB = new File(data, currentDBPath);
-                File backupDB = new File(sd, backupDBPath);
-
-                if (currentDB.exists()) {
-                    FileChannel src = new FileInputStream(currentDB).getChannel();
-                    FileChannel dst = new FileOutputStream(backupDB).getChannel();
-                    dst.transferFrom(src, 0, src.size());
-                    src.close();
-                    dst.close();
-                    Toast.makeText(context, "Database backup successfully to " + backupDB.getPath(), Toast.LENGTH_LONG).show();
-                }
-            }
-
-        } catch (Exception e) {
-            Toast.makeText(context, "Database backup failed....", Toast.LENGTH_LONG).show();
-            Log.e(LOG_TAG, "Database backup failed....", e);
-        }
-    }
-
     public static Date parseStringToDate(String created) {
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz", Locale.getDefault());
         Date date = null;
