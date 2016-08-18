@@ -14,4 +14,5 @@
   <string name="snack_action">CONNECT</string>
   <string name="action_backup_db">Backup DB</string>
   <string name="content_description_chart">%s stock variation for past few days</string>
+  <string name="msg_widget_empty">No stock updates</string>
 </resources>
