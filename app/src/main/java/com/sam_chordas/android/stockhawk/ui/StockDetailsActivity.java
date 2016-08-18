@@ -1,6 +1,9 @@
 package com.sam_chordas.android.stockhawk.ui;
 
+import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -10,6 +13,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,9 +36,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import butterknife.BindView;
+
+import static android.R.attr.data;
 
 public class StockDetailsActivity extends BaseActivity {
     public static final String TAG = StockDetailsActivity.class.getSimpleName();
@@ -54,6 +62,8 @@ public class StockDetailsActivity extends BaseActivity {
     TextView textViewChangePercentage;
     @BindView(R.id.chartQuoteHistory)
     LineChartView lineChartQuoteHistory;
+    @BindView(R.id.chartRoot)
+    FrameLayout chartRoot;
     private Typeface robotoLight;
 
     ArrayList<Quote> filteredQuote = new ArrayList<>();
@@ -62,6 +72,7 @@ public class StockDetailsActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().show();
+        getSupportActionBar().setHomeButtonEnabled(true);
         mSymbol = getIntent().getStringExtra(INTENT_ARGS_STOCK_SYMBOL);
         robotoLight = Typeface.createFromAsset(this.getAssets(), "fonts/Roboto-Light.ttf");
         setupUi();
@@ -92,6 +103,7 @@ public class StockDetailsActivity extends BaseActivity {
 
     private void setStock() {
         textViewStock.setText(mSymbol);
+        textViewStock.setContentDescription(String.format(Locale.getDefault(),getString(R.string.content_description_chart),mSymbol));
     }
 
     private void showDetails(Quote quote) {
@@ -135,9 +147,8 @@ public class StockDetailsActivity extends BaseActivity {
         lineSet.setColor(ContextCompat.getColor(this, R.color.material_blue_500));
         lineSet.setDotsColor(ContextCompat.getColor(this, R.color.material_blue_700));
         lineSet.setThickness(getResources().getDimension(R.dimen.chart_line_thickness));
+        lineSet.setDotsRadius(getResources().getDimension(R.dimen.chart_dot_thickness));
         int colorLight = ContextCompat.getColor(this, R.color.primary_text_dark);
-
-
         Collections.sort(entries);
         //find max and min value for series
         double max = entries.get(entries.size() - 1) + 1;
@@ -177,21 +188,32 @@ public class StockDetailsActivity extends BaseActivity {
                 datesLongShowings.add(quote.created.getTime());
             } while (cursorStockChanged.moveToNext());
         }
-        Collections.sort(datesLongShowings, new Comparator<Long>() {
+        Comparator<Long> comparatorReversLong = new Comparator<Long>() {
             @Override
             public int compare(Long lhs, Long rhs) {
                 return lhs < rhs ? 1 : lhs == rhs ? 0 : -1;
             }
-        });
+        };
+        Collections.sort(datesLongShowings, comparatorReversLong);
         Set<String> datesShowings = new HashSet<>(7);
+        ArrayList<Long> datesLongShowingsFiltered = new ArrayList<>();
         for (Long datesLongShowing : datesLongShowings) {
             //only grab last 7 day or less
-            datesShowings.add(Utils.format(new Date(Utils.trim(new Date(datesLongShowing)))));
+            Date created = new Date(Utils.trim(new Date(datesLongShowing)));
+            if (datesShowings.add(Utils.format(created))) {
+                datesLongShowingsFiltered.add(created.getTime());
+            }
             if (datesShowings.size() >= 7) break;
+        }
+        Collections.sort(datesLongShowingsFiltered);
+        datesShowings.clear();
+        ArrayList<String> datesShowingsSorted = new ArrayList<>(7);
+        for (Long aLong : datesLongShowingsFiltered) {
+            datesShowingsSorted.add(Utils.format(new Date(Utils.trim(new Date(aLong)))));
         }
 
         ArrayList<Quote> filteredQuote = new ArrayList<>();
-        for (String datesShowing : datesShowings) {
+        for (String datesShowing : datesShowingsSorted) {
             ArrayList<Quote> subListForDate = new ArrayList<>();
             for (Quote quote : quotes) {
                 if (datesShowing.equalsIgnoreCase(Utils.format(quote.created))) {
@@ -211,7 +233,6 @@ public class StockDetailsActivity extends BaseActivity {
                 filteredQuote.add(quoteSelected != null ? quoteSelected : subListForDate.get(0));
             }
         }
-        Collections.reverse(filteredQuote);
         return filteredQuote;
     }
 

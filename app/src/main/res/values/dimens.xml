@@ -8,4 +8,5 @@
     <dimen name="navigation_drawer_width">240dp</dimen>
     <dimen name="chart_line_thickness">3dp</dimen>
     <dimen name="default_padding">4dp</dimen>
+    <dimen name="chart_dot_thickness">8dp</dimen>
 </resources>
