@@ -103,7 +103,6 @@ public class Utils {
             String symbol = jsonObject.getString("symbol");
             String bid = jsonObject.getString("Bid");
             String changeinPercent = jsonObject.getString("ChangeinPercent");
-
             if (change.equals("null") || symbol.equals("null") || bid.equals("null") || changeinPercent.equals("null"))
                 return null;
             builder.withValue(QuoteColumns.SYMBOL, symbol);

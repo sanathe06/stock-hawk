@@ -32,12 +32,14 @@ import java.util.ArrayList;
  */
 public class StockTaskService extends GcmTaskService {
     public static final String ACTION_UPDATE = "com.sam_chordas.android.stockhawk.service.ACTION_UPDATE";
+    public static final String ACTION_STOCK_NOT_FOUND = "com.sam_chordas.android.stockhawk.service.ACTION_STOCK_NOT_FOUND";
     private String LOG_TAG = StockTaskService.class.getSimpleName();
 
     private OkHttpClient client = new OkHttpClient();
     private Context mContext;
     private StringBuilder mStoredSymbols = new StringBuilder();
     private boolean isUpdate;
+    private boolean isAdd = false;
 
     public StockTaskService() {
     }
@@ -100,6 +102,7 @@ public class StockTaskService extends GcmTaskService {
             }
         } else if (params.getTag().equals("add")) {
             isUpdate = false;
+            isAdd = true;
             // get symbol from params.getExtra and build query
             String stockInput = params.getExtras().getString("symbol");
             try {
@@ -135,6 +138,11 @@ public class StockTaskService extends GcmTaskService {
                         if (operations != null && !operations.isEmpty()) {
                             mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
                                     operations);
+                        }else{
+                            if (isAdd) {
+                                Intent update = new Intent(ACTION_STOCK_NOT_FOUND).setPackage(mContext.getPackageName());
+                                mContext.sendBroadcast(update);
+                            }
                         }
                         //update widget
                         Intent update = new Intent(ACTION_UPDATE).setPackage(mContext.getPackageName());

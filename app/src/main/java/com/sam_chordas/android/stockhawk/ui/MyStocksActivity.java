@@ -1,9 +1,11 @@
 package com.sam_chordas.android.stockhawk.ui;
 
 import android.app.LoaderManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -166,11 +168,34 @@ public class MyStocksActivity extends BaseActivity implements LoaderManager.Load
         }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+    }
 
     @Override
     public void onResume() {
         super.onResume();
+        registerReceiver(receiver,new IntentFilter(StockTaskService.ACTION_STOCK_NOT_FOUND));
         restartLoader();
+    }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            showNotFoundStockMessage();
+        }
+    };
+
+    private void showNotFoundStockMessage() {
+        mSnackbar = Snackbar.make(findViewById(R.id.fab),
+                R.string.msg_no_stock_found, Snackbar.LENGTH_LONG);
+        mSnackbar.setActionTextColor(Color.RED);
+        View sbView = mSnackbar.getView();
+        TextView textView = (TextView) sbView.findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.RED);
+        mSnackbar.show();
     }
 
     private void restartLoader() {
