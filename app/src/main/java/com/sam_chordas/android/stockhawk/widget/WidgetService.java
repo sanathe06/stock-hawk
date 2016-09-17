@@ -1,5 +1,6 @@
 package com.sam_chordas.android.stockhawk.widget;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -11,6 +12,7 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.sam_chordas.android.stockhawk.R;
+import com.sam_chordas.android.stockhawk.data.Quote;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.ui.StockDetailsActivity;
@@ -76,10 +78,10 @@ public class WidgetService extends RemoteViewsService {
                 }
                 mCursor.moveToPosition(position);
                 RemoteViews views = new RemoteViews(getPackageName(), R.layout.widget_list_item);
-                String symbol = mCursor.getString(mCursor.getColumnIndex("symbol"));
-                String change = mCursor.getString(mCursor.getColumnIndex("change"));
-                String bidPrice = mCursor.getString(mCursor.getColumnIndex("bid_price"));
-                int is_up = mCursor.getInt(mCursor.getColumnIndex("is_up"));
+                String symbol = mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL));
+                String change = mCursor.getString(mCursor.getColumnIndex(QuoteColumns.CHANGE));
+                String bidPrice = mCursor.getString(mCursor.getColumnIndex(QuoteColumns.BIDPRICE));
+                int is_up = mCursor.getInt(mCursor.getColumnIndex(QuoteColumns.ISUP));
                 Log.d(TAG, String.format("data symbol %s change %s isUp %s", symbol, change, is_up));
 
                 views.setTextViewText(R.id.widget_stock_symbol, symbol);
@@ -92,9 +94,10 @@ public class WidgetService extends RemoteViewsService {
                     views.setInt(R.id.widget_change, "setBackgroundResource", R.drawable.percent_change_pill_red);
                 }
 
+                //lunching details activity for stock
                 final Intent intent = new Intent();
                 intent.putExtra(StockDetailsActivity.INTENT_ARGS_STOCK_SYMBOL, symbol);
-                views.setOnClickFillInIntent(R.id.widgetRoot, intent);
+                views.setOnClickFillInIntent(R.id.widget_item_root,intent);
 
                 return views;
             }

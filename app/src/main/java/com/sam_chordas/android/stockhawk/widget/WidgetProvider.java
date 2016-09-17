@@ -34,6 +34,17 @@ public class WidgetProvider extends AppWidgetProvider {
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+
+            //launch MyStocksActivity
+            Intent intentMyStock = new Intent(context, MyStocksActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intentMyStock, 0);
+            remoteViews.setOnClickPendingIntent(R.id.widgetRoot, pendingIntent);
+
+            //launching pending intent for stock item click
+            Intent startActivityIntent = new Intent(context, StockDetailsActivity.class);
+            PendingIntent startActivityPendingIntent = PendingIntent.getActivity(context, 0, startActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteViews.setPendingIntentTemplate(R.id.listViewWidget, startActivityPendingIntent);
+
             remoteViews.setRemoteAdapter(appWidgetId, R.id.listViewWidget, intent);
 
             remoteViews.setEmptyView(R.id.listViewWidget, R.id.empty_view);
