@@ -26,7 +26,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
-import com.sam_chordas.android.stockhawk.BuildConfig;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.common.ConnectivityReceiver;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;

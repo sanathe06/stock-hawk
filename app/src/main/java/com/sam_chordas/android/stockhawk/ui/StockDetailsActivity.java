@@ -1,9 +1,6 @@
 package com.sam_chordas.android.stockhawk.ui;
 
-import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -13,10 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.db.chart.listener.OnEntryClickListener;
 import com.db.chart.model.LineSet;
@@ -41,8 +35,6 @@ import java.util.Set;
 
 import butterknife.BindView;
 
-import static android.R.attr.data;
-
 public class StockDetailsActivity extends BaseActivity {
     public static final String TAG = StockDetailsActivity.class.getSimpleName();
 
@@ -62,8 +54,6 @@ public class StockDetailsActivity extends BaseActivity {
     TextView textViewChangePercentage;
     @BindView(R.id.chartQuoteHistory)
     LineChartView lineChartQuoteHistory;
-    @BindView(R.id.chartRoot)
-    FrameLayout chartRoot;
     private Typeface robotoLight;
 
     ArrayList<Quote> filteredQuote = new ArrayList<>();
