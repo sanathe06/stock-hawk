@@ -15,4 +15,6 @@
   <string name="action_backup_db">Backup DB</string>
   <string name="content_description_chart">%s stock variation for past few days</string>
   <string name="msg_widget_empty">No stock updates</string>
+  <string name="widget_title">Stock Update</string>
+  <string name="stock_widget_title">My Stock</string>
 </resources>

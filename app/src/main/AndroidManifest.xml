@@ -44,7 +44,7 @@
         <provider
             android:name=".data.generated.QuoteProvider"
             android:authorities="com.sam_chordas.android.stockhawk.data.QuoteProvider"
-            android:exported="false" />
+            android:exported="true" />
 
         <receiver
             android:name=".common.ConnectivityReceiver"
@@ -56,14 +56,22 @@
 
         <activity android:name=".ui.StockDetailsActivity"></activity>
 
-        <receiver android:name=".widget.WidgetProvider">
+        <receiver
+            android:name=".widget.WidgetProvider"
+            android:label="@string/widget_title">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+               <action android:name="com.sam_chordas.android.stockhawk.service.ACTION_UPDATE" />
             </intent-filter>
             <meta-data
-                android:name="android.appwidget.AppWidgetProvider"
+                android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
         </receiver>
+        <service
+            android:name=".widget.WidgetService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS"></service>
     </application>
 
 </manifest>

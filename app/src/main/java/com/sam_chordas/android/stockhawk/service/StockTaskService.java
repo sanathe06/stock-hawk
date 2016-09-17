@@ -3,6 +3,7 @@ package com.sam_chordas.android.stockhawk.service;
 import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
  * and is used for the initialization and adding task as well.
  */
 public class StockTaskService extends GcmTaskService {
+    public static final String ACTION_UPDATE = "com.sam_chordas.android.stockhawk.service.ACTION_UPDATE";
     private String LOG_TAG = StockTaskService.class.getSimpleName();
 
     private OkHttpClient client = new OkHttpClient();
@@ -118,23 +120,28 @@ public class StockTaskService extends GcmTaskService {
             urlString = urlStringBuilder.toString();
             try {
                 getResponse = fetchData(urlString);
-                Log.d(LOG_TAG, " response data " + getResponse);
-                result = GcmNetworkManager.RESULT_SUCCESS;
-                try {
-                    ContentValues contentValues = new ContentValues();
-                    // update ISCURRENT to 0 (false) so new data is current
-                    if (isUpdate) {
-                        contentValues.put(QuoteColumns.ISCURRENT, 0);
-                        mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
-                                null, null);
+                if(getResponse != null) {
+                    Log.d(LOG_TAG, " response data " + getResponse);
+                    result = GcmNetworkManager.RESULT_SUCCESS;
+                    try {
+                        ContentValues contentValues = new ContentValues();
+                        // update ISCURRENT to 0 (false) so new data is current
+                        if (isUpdate) {
+                            contentValues.put(QuoteColumns.ISCURRENT, 0);
+                            mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
+                                    null, null);
+                        }
+                        ArrayList<ContentProviderOperation> operations = Utils.quoteJsonToContentVals(getResponse);
+                        if (operations != null && !operations.isEmpty()) {
+                            mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
+                                    operations);
+                        }
+                        //update widget
+                        Intent update = new Intent(ACTION_UPDATE).setPackage(mContext.getPackageName());
+                        mContext.sendBroadcast(update);
+                    } catch (RemoteException | OperationApplicationException e) {
+                        Log.e(LOG_TAG, "Error applying batch insert", e);
                     }
-                    ArrayList<ContentProviderOperation> operations = Utils.quoteJsonToContentVals(getResponse);
-                    if (operations != null && !operations.isEmpty()) {
-                        mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-                                operations);
-                    }
-                } catch (RemoteException | OperationApplicationException e) {
-                    Log.e(LOG_TAG, "Error applying batch insert", e);
                 }
             } catch (IOException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);

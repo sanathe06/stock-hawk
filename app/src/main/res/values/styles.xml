@@ -11,10 +11,19 @@
         <item name="android:textSize">20sp</item>
         <item name="android:textColor">@color/primary_text_dark</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/percent_change_pill</item>
+        <item name="android:paddingEnd">3dp</item>
+        <item name="android:paddingLeft">3dp</item>
+        <item name="android:paddingRight">3dp</item>
+        <item name="android:paddingStart">3dp</item>
     </style>
 
     <style name="BidPriceTextStyle">
         <item name="android:textSize">20sp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingStart">10dp</item>
     </style>
 
     <style name="StockSymbolTextStyle">
@@ -25,5 +34,14 @@
     <style name="DetailsTextStyle">
         <item name="android:textSize">25sp</item>
         <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="stockWidgetHeader">
+        <item name="android:background">@color/material_blue_700</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingTop">8dp</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.AppCompat.Large</item>
     </style>
 </resources>
