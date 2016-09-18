@@ -4,8 +4,8 @@
   <string name="action_change_units">Change Units</string>
   <string name="symbol_search">Symbol Search</string>
   <string name="content_test">Search for a Stock Symbol</string>
-  <string name="input_hint">FB</string>
-  <string name="input_prefill"></string>
+  <string name="input_hint" translatable="false">FB</string>
+  <string name="input_prefill" translatable="false"></string>
   <string name="network_toast">Uh-oh! This app requires an internet connection</string>
   <string name="msg_no_network">Internet needs for latest stock details</string>
   <string name="snack_action">CONNECT</string>
