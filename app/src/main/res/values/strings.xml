@@ -14,4 +14,6 @@
   <string name="widget_title">Stock Update</string>
   <string name="stock_widget_title">My Stock</string>
   <string name="msg_no_stock_found">Stock can not found</string>
+  <string name="msg_stocke_already_saved">This stock is already saved!</string>
+  <string name="add_new_stock">Add new stock</string>
 </resources>
